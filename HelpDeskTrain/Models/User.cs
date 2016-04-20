@@ -35,7 +35,7 @@ namespace HelpDeskTrain.Models
         public Department Department { get; set; }
         // Статус
         [Required]
-        [Display(Name = "Статус")]
+        [Display(Name = "Роль")]
         public int RoleId { get; set; }
         public Role Role { get; set; }
     }

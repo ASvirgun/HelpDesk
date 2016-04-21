@@ -3,7 +3,21 @@
 @{
     ViewBag.Title = "Список пользователей";
 }
-<p>
+
+<div>
+    <form method="post" action="/User/Index">
+        <table align="center">
+            <tr>
+                <td>
+                    <p>Отдел: </p>
+                </td>
+                <td> @Html.DropDownList("department", ViewBag.Departments as SelectList)</td>
+                <td><p>Статус : </p></td>
+                <td> @Html.DropDownList("role", ViewBag.Roles as SelectList)</td>
+                <td><input type="submit" value="Фильтр" /> </td>
+            </tr>
+        </table>
+    </form></div>
 
 <table border="1" align="center">
     <tr>

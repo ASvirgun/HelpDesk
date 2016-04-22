@@ -184,10 +184,11 @@
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\User\Create.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
+    <Content Include="Views\Service\Department.cshtml" />
+    <Content Include="Views\Service\Activ.cshtml" />
+    <Content Include="Views\Service\Categories.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Service\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />

@@ -146,6 +146,18 @@
     </Content>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\pictures\executor.png" />
+    <Content Include="Content\pictures\info.png" />
+    <Content Include="Content\pictures\lifecycle.png" />
+    <Content Include="Content\pictures\prior1.png" />
+    <Content Include="Content\pictures\prior2.png" />
+    <Content Include="Content\pictures\prior3.png" />
+    <Content Include="Content\pictures\prior4.png" />
+    <Content Include="Content\pictures\status1.png" />
+    <Content Include="Content\pictures\status2.png" />
+    <Content Include="Content\pictures\status3.png" />
+    <Content Include="Content\pictures\status4.png" />
+    <Content Include="Content\pictures\status5.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -189,6 +201,7 @@
     <Content Include="Views\Service\Activ.cshtml" />
     <Content Include="Views\Service\Categories.cshtml" />
     <Content Include="Views\Request\Create.cshtml" />
+    <Content Include="Views\Request\Index.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

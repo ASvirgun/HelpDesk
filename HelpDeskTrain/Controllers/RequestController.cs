@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -14,7 +15,13 @@ namespace HelpDeskTrain.Controllers
         HelpdeskContext db = new HelpdeskContext();
         public ActionResult Index()
         {
-            return View();
+            var user = db.Users.FirstOrDefault(x => x.Login == HttpContext.User.Identity.Name);
+            var requests = db.Requests.Where(r => r.UserId == user.Id)
+                .Include(r => r.Category)
+                .Include(r => r.Lifecycle)
+                .Include(r => r.User)
+                .OrderByDescending(r => r.Lifecycle.Opened);
+            return View(requests.ToList());
         }
 
         [HttpGet]

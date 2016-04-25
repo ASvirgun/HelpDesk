@@ -11,7 +11,7 @@ namespace HelpDeskTrain.Models
     {
         Open = 1,
         Distributed = 2,
-        Proccesing = 3,
+        Processing = 3,
         Checking = 4,
         Closed = 5
     }

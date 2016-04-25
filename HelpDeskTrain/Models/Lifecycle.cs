@@ -21,7 +21,7 @@ namespace HelpDeskTrain.Models
         // Дата обработки
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy H:mm:ss}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Date)]
-        public DateTime? Proccesing { get; set; }
+        public DateTime? Processing { get; set; }
         // Дата проверки
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy H:mm:ss}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Date)]

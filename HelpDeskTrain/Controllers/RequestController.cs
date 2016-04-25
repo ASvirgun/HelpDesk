@@ -67,5 +67,92 @@ namespace HelpDeskTrain.Controllers
             }
             return View(request);
         }
+
+        public ActionResult Details(int id)
+        {
+            Request request = db.Requests.Find(id);
+            if (request != null)
+            {
+                var activ = db.Activs.Where(m => m.Id == request.ActivId);
+                if (activ.Any())
+                {
+                    request.Activ = activ.First();
+                }
+                request.Category = db.Categories.First(m => m.Id == request.CategoryId);
+                return PartialView("_Detalis", request);
+            }
+            return View("Index");
+        }
+
+        public ActionResult Executor(int id)
+        {
+            var executor = db.Users.Find(id);
+            if (executor != null)
+            {
+                return PartialView("_Executor", executor);
+            }
+            return View("Index");
+        }
+
+        public ActionResult Lifecycle(int id)
+        {
+            var lifecycle = db.Lifecycles.Find(id);
+            if (lifecycle != null)
+            {
+                return PartialView("_Lifecycle", lifecycle);
+            }
+            return View("Index");
+        }
+
+        public ActionResult Delete(int id)
+        {
+            var request = db.Requests.Find(id);
+            var user = db.Users.FirstOrDefault(x => x.Login == HttpContext.User.Identity.Name);
+            if (user != null && (request != null && request.UserId == user.Id))
+            {
+                var lifecycle = db.Lifecycles.FirstOrDefault(x => x.Id == request.LifecycleId);
+                db.Lifecycles.Remove(lifecycle);
+                db.SaveChanges();
+            }
+            return View("Index");
+        }
+
+        public ActionResult Download(int id)
+        {
+            Request r = db.Requests.Find(id);
+            if (r != null)
+            {
+                string filename = Server.MapPath("~/Files/" + r.File);
+                string contentType = "image/jpeg";
+
+                string ext = filename.Substring(filename.LastIndexOf('.'));
+                switch (ext)
+                {
+                    case "txt":
+                        contentType = "text/plain";
+                        break;
+                    case "png":
+                        contentType = "image/png";
+                        break;
+                    case "tiff":
+                        contentType = "image/tiff";
+                        break;
+                }
+                return File(filename, contentType, filename);
+            }
+
+            return Content("Файл не найден");
+        }
+
+        [Authorize(Roles = "Администратор")]
+        public ActionResult RequestList()
+        {
+            var requests = db.Requests.Include(r => r.Category)
+                                    .Include(r => r.Lifecycle)
+                                    .Include(r => r.User)
+                                    .OrderByDescending(r => r.Lifecycle.Opened);
+
+            return View(requests.ToList());
+        }
     }
 }

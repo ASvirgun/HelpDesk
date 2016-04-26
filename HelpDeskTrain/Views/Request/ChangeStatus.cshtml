@@ -1,13 +1,11 @@
 ﻿@model IEnumerable<Request>
 @using HelpDeskTrain.Models
-
 @{
     ViewBag.Title = "Список заявок";
     int i = 0;
-
 }
 
-<h2>Список заявок</h2>
+<h2>Изменить статус заявки</h2>
 <p>Всего заявок: @(Model.Count<Request>())</p>
 <table>
 
@@ -17,11 +15,7 @@
         <tr>
             <td><b>@i</b></td>
             <td>
-                @if (item.Status == (int)RequestStatus.Open)
-                {
-                    <img src="../../Content/pictures/status1.png" title="Заявка открыта" class="tdImage" />
-                }
-                else if (item.Status == (int)RequestStatus.Distributed)
+                @if (item.Status == (int)RequestStatus.Distributed)
                 {
                     <img src="../../Content/pictures/status2.png" title="Заявка распределена" class="tdImage" />
                 }
@@ -32,10 +26,6 @@
                 else if (item.Status == (int)RequestStatus.Checking)
                 {
                     <img src="../../Content/pictures/status4.png" title="Заявка на проверке" class="tdImage" />
-                }
-                else if (item.Status == (int)RequestStatus.Closed)
-                {
-                    <img src="../../Content/pictures/status5.png" title="Заявка закрыта" class="tdImage" />
                 }
             </td>
             <td>
@@ -60,7 +50,8 @@
                 @if (item.File != null)
                 {
                     <a href="/Request/Download/@item.Id">
-                        <img src="../../Content/pictures/filey.png" title='@item.File' class="tdImage" />
+                        <img src="../../Content/pictures/filey.png"
+                             title='@item.File' class="tdImage" />
                     </a>
                 }
                 else
@@ -70,7 +61,12 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Lifecycle.Opened)
-
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Activ.CabNumber)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -84,22 +80,28 @@
                     </a>
                 </div>
             </td>
-            <td>
-                <div>
-                    <a class="openDialog" data-dialog-id="executorDialog" data-dialog-title="Исполнитель заявки"
-                       href="/Request/Executor/@item.ExecutorId">
-                        <img src="../../Content/pictures/executor.png" class="tdImage" title="Исполнитель заявки" />
-                    </a>
-                </div>
-            </td>
-            <td>
-                <div>
-                    <a class="openDialog" data-dialog-id="lifecycleDialog" data-dialog-title="Жизненный цикл заявки"
-                       href="/Request/Lifecycle/@item.LifecycleId">
-                        <img src="../../Content/pictures/lifecycle.png" class="tdImage" title="Жизненный цикл заявки" />
-                    </a>
-                </div>
-            </td>
+            @using (Html.BeginForm())
+            {
+                <td>
+                    @Html.Hidden("requestId", item.Id)
+                    @if (item.Status == (int)RequestStatus.Distributed)
+                    {
+                        @Html.DropDownList("status", new[] { new SelectListItem() { Text = "В процессе", Value = "3" },
+        new SelectListItem() { Text = "На проверке", Value = "4" }, new SelectListItem() { Text = "Закрыта", Value = "5" }})
+                    }
+                    else if (item.Status == (int)RequestStatus.Processing)
+                    {
+                        @Html.DropDownList("status", new[] { new SelectListItem() { Text = "На проверке", Value = "4" }, new SelectListItem() { Text = "Закрыта", Value = "5" } })
+                    }
+                    else if (item.Status == (int)RequestStatus.Checking)
+                    {
+                        @Html.DropDownList("status", new[] { new SelectListItem() { Text = "Закрыта", Value = "5" } })
+                    }
+                </td>
+                <td>
+                    <input type="submit" value="Изменить статус" />
+                </td>
+            }
         </tr>
     }
 </table>

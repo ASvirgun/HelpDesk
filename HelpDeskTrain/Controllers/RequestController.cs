@@ -154,5 +154,94 @@ namespace HelpDeskTrain.Controllers
 
             return View(requests.ToList());
         }
+
+        #region DistributeRequest
+        [HttpGet]
+        [Authorize(Roles = "Модератор")]
+        public ActionResult Distribute()
+        {
+            var requests = db.Requests.Include(r => r.User)
+                .Include(r => r.Lifecycle)
+                .Include(r => r.Executor)
+                .Where(r => r.ExecutorId == null)
+                .Where(r => r.Status != (int)RequestStatus.Closed);
+            List<User> executors = db.Users.Include(r => r.Role).Where(e => e.Role.Name == "Испонитель").ToList<User>();
+            ViewBag.Executors = new SelectList(executors, "Id", "Name");
+            return View(requests);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Модератор")]
+        public ActionResult Distribute(int? requestId, int? executorId)
+        {
+            if (requestId == null && executorId == null)
+            {
+                return RedirectToAction("Distribute");
+            }
+            Request req = db.Requests.Find(requestId);
+            User ex = db.Users.Find(executorId);
+            if (req == null && ex == null)
+            {
+                return RedirectToAction("Distribute");
+            }
+            req.ExecutorId = executorId;
+            req.Status = (int)RequestStatus.Distributed;
+            Lifecycle lifecycle = db.Lifecycles.Find(req.LifecycleId);
+            lifecycle.Distributed = DateTime.Now;
+            db.Entry(lifecycle).State = EntityState.Modified;
+            db.Entry(req).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return RedirectToAction("Distribute");
+        }
+        #endregion
+
+#region ChangeStatus
+
+        [HttpGet]
+        [Authorize(Roles = "Исполнитель")]
+        public ActionResult ChangeStatus()
+        {
+            User user = db.Users.FirstOrDefault(x => x.Login == HttpContext.User.Identity.Name);
+            if (user != null)
+            {
+                var requests = db.Requests.Include(x => x.User)
+                    .Include(x => x.Lifecycle)
+                    .Include(x => x.Executor)
+                    .Where(x => x.ExecutorId == user.Id)
+                    .Where(x => x.Status != (int) RequestStatus.Closed);
+                return View(requests);
+            }
+            return RedirectToAction("LogOff", "Account");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Исполнитель")]
+        public ActionResult ChangeStatus(int requestId, int status)
+        {
+            User user = db.Users.FirstOrDefault(x => x.Login == HttpContext.User.Identity.Name);
+            if (user == null)
+            {
+                return RedirectToAction("LogOff", "Account"); 
+            }
+            Request req = db.Requests.Find(requestId);
+            if (req != null)
+            {
+                req.Status = status;
+                Lifecycle lifecycle = db.Lifecycles.Find(req.LifecycleId);
+                if (status == (int) RequestStatus.Processing)
+                    lifecycle.Processing = DateTime.Now;
+                if (status == (int) RequestStatus.Checking)
+                    lifecycle.Checking = DateTime.Now;
+                if (status == (int) RequestStatus.Closed)
+                    lifecycle.Closed = DateTime.Now;
+
+                db.Entry(lifecycle).State = EntityState.Modified;
+                db.Entry(req).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            return RedirectToAction("ChangeStatus");
+        }
+#endregion
     }
 }

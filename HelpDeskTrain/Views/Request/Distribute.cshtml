@@ -1,14 +1,12 @@
 ﻿@model IEnumerable<Request>
 @using HelpDeskTrain.Models
-
 @{
     ViewBag.Title = "Список заявок";
     int i = 0;
-
 }
 
 <h2>Список заявок</h2>
-<p>Всего заявок: @(Model.Count<Request>())</p>
+<p>Всего нераспределенных заявок: @(Model.Count<Request>())</p>
 <table>
 
     @foreach (var item in Model)
@@ -32,10 +30,6 @@
                 else if (item.Status == (int)RequestStatus.Checking)
                 {
                     <img src="../../Content/pictures/status4.png" title="Заявка на проверке" class="tdImage" />
-                }
-                else if (item.Status == (int)RequestStatus.Closed)
-                {
-                    <img src="../../Content/pictures/status5.png" title="Заявка закрыта" class="tdImage" />
                 }
             </td>
             <td>
@@ -70,7 +64,12 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Lifecycle.Opened)
-
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Activ.CabNumber)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -84,22 +83,25 @@
                     </a>
                 </div>
             </td>
-            <td>
-                <div>
-                    <a class="openDialog" data-dialog-id="executorDialog" data-dialog-title="Исполнитель заявки"
-                       href="/Request/Executor/@item.ExecutorId">
-                        <img src="../../Content/pictures/executor.png" class="tdImage" title="Исполнитель заявки" />
-                    </a>
-                </div>
-            </td>
-            <td>
-                <div>
-                    <a class="openDialog" data-dialog-id="lifecycleDialog" data-dialog-title="Жизненный цикл заявки"
-                       href="/Request/Lifecycle/@item.LifecycleId">
-                        <img src="../../Content/pictures/lifecycle.png" class="tdImage" title="Жизненный цикл заявки" />
-                    </a>
-                </div>
-            </td>
+            @if ((ViewBag.Executors as SelectList).Count() > 0)
+            {
+                using (Html.BeginForm())
+                {
+                    <td>
+                        @Html.Hidden("requestId", item.Id)
+                        @Html.DropDownList("executorId", ViewBag.Executors as SelectList)
+                    </td>
+                    <td>
+                        <input type="submit" value="Назначить" />
+                    </td>
+                }
+            }
+            else
+            {
+                <td>
+                    В БД отсутствуют исполнители
+                </td>
+            }
         </tr>
     }
 </table>
@@ -107,3 +109,4 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryui")
 }
+
